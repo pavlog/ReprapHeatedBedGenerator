@@ -2,18 +2,21 @@
 
 
 boolean record;
-int h=880;//height of PCB in mm
-int w=900;//width of PCB in mm
-int heatWidth=810; //width of heated section
-int heatHeight=810; //height of heated section
-float linewidth=8; //width of traces in mm - increase this to decrease resistance, and vice versa
-float traceSpacing = 3;
+int h=110;//height of PCB in mm
+int w=110;//width of PCB in mm
+int heatWidth=100; //width of heated section
+int heatHeight=100; //height of heated section
+float linewidth=0.5; //width of traces in mm - increase this to decrease resistance, and vice versa
+float traceSpacing = 1;
 float jump = linewidth*4+traceSpacing*4; //traces are 1/4 this distance apart vertically - increase this to decrease resistance, and vice versa. also, thicker traces need a larger value here
 float offset = linewidth+traceSpacing; //this is the side to side offset to keep the traces apart on the left and right sides. increase this when thick traces get too close together
-float voltage = 24.0f; //supply voltage. used to calculate current and power draw
+float voltage = 12.0f; //supply voltage. used to calculate current and power draw
 
 
 float copperWeight = 1; //oz/sqft. used for calculating resistance and power/current draw
+
+
+float scale = 4;
 
 int viewPadding=100; //extra pixels for the view in Processing, to keep it clean. Probably leave this at 100
 float totalDistance=0; //this is used to calculate the distance of the traces. leave at zero.
@@ -22,8 +25,11 @@ XML xml;
 XML signal1;
 XML outline;
 
-void setup() {
-size(w+viewPadding,h+viewPadding,P3D);
+void setup() 
+{
+  int ww = (int)(w*scale+viewPadding*scale); 
+  int hh = (int)(h*scale+viewPadding*scale); 
+size(ww,hh,P3D);
 smooth();
 
   
@@ -33,7 +39,7 @@ smooth();
    signal1 = xml.getChild("drawing/board/signals/signal");
    
    outline = xml.getChild("drawing/board/plain");
-   translate(viewPadding/2,viewPadding/2);
+   translate(viewPadding*scale/2,viewPadding*scale/2);
    beginShape();
    makeWire(0,0,w,0,linewidth,20,outline);
    makeWire(w,0,w,h,linewidth,20,outline);
@@ -56,8 +62,8 @@ smooth();
 
 float makeWire(float X1, float Y1, float X2, float Y2, float lineWidth, int layer, XML parent)
 {
-  vertex(X1,h-Y1); //Processing and Eagle have inverted vertical axes, so we flip the view in processing in the Y direction
-  vertex(X2,h-Y2);
+  vertex(X1*scale,h*scale-Y1*scale); //Processing and Eagle have inverted vertical axes, so we flip the view in processing in the Y direction
+  vertex(X2*scale,h*scale-Y2*scale);
   //String xmlString = "<wire x1=\""+X1+"\" y1=\""+Y1+"\" x2=\""+X2+"\" y2=\""+Y2+"\" width=\""+linewidth+"\" layer=\""+layer+"\"/>";
  // println(xmlString);
   XML wire = new XML("wire");
@@ -75,16 +81,15 @@ float makeWire(float X1, float Y1, float X2, float Y2, float lineWidth, int laye
 }
 
 
-void draw() {
-
+void draw() 
+{
  
-translate(viewPadding/2,viewPadding/2);
+translate(viewPadding*scale/2,viewPadding*scale/2);
 float oX=(w-heatWidth)/2;
 float oY=(h-heatHeight)/2-(heatHeight%jump)/2;
-strokeWeight(linewidth);
+strokeWeight(linewidth*scale);
 noFill();
 beginShape(LINES);
-
 
 float lastI=0;
 for(float i=jump;i<heatHeight-jump;i+=jump)
@@ -129,6 +134,7 @@ PrintWriter output = createWriter( "result.brd" );
 
 output.print(xml.toString());
 output.close();
+
 
 
 }
