@@ -2,11 +2,11 @@
 
 
 boolean record;
-int h=110;//height of PCB in mm
-int w=110;//width of PCB in mm
-int heatWidth=100; //width of heated section
-int heatHeight=100; //height of heated section
-float linewidth=0.5; //width of traces in mm - increase this to decrease resistance, and vice versa
+int h=120;//height of PCB in mm
+int w=120;//width of PCB in mm
+int heatWidth=110; //width of heated section
+int heatHeight=110; //height of heated section
+float linewidth=1; //width of traces in mm - increase this to decrease resistance, and vice versa
 float traceSpacing = 1;
 float jump = linewidth*4+traceSpacing*4; //traces are 1/4 this distance apart vertically - increase this to decrease resistance, and vice versa. also, thicker traces need a larger value here
 float offset = linewidth+traceSpacing; //this is the side to side offset to keep the traces apart on the left and right sides. increase this when thick traces get too close together
@@ -16,7 +16,7 @@ float voltage = 12.0f; //supply voltage. used to calculate current and power dra
 float copperWeight = 1; //oz/sqft. used for calculating resistance and power/current draw
 
 
-float scale = 4;
+float scale =4;
 
 int viewPadding=100; //extra pixels for the view in Processing, to keep it clean. Probably leave this at 100
 float totalDistance=0; //this is used to calculate the distance of the traces. leave at zero.
@@ -25,12 +25,18 @@ XML xml;
 XML signal1;
 XML outline;
 
+public void settings() 
+{
+  int ww = (int)(w*scale+viewPadding*scale); 
+  int hh = (int)(h*scale+viewPadding*scale); 
+  size(ww,hh,P3D);
+}
+
 void setup() 
 {
   int ww = (int)(w*scale+viewPadding*scale); 
   int hh = (int)(h*scale+viewPadding*scale); 
-size(ww,hh,P3D);
-smooth();
+  smooth();
 
   
    xml = loadXML("board.xml");
@@ -117,7 +123,7 @@ float oldOY=oY;
 
 oY=(h-heatHeight)/2;
 makeWire(oX+heatWidth,oldOY+jump+2*jump/4,oX+heatWidth,oY+jump-jump/2,linewidth,1,signal1);
-makeWire(oX+heatWidth,oY+jump-jump/2,oX,oY+jump-jump/2,linewidth,1,signal1);
+//makeWire(oX+heatWidth,oY+jump-jump/2,oX,oY+jump-jump/2,linewidth,1,signal1);
 
 endShape(); 
 println(totalDistance+" mm of wire");
